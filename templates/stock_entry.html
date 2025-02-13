@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入出庫登録</title>
+</head>
+<body>
+    <h1>入出庫登録</h1>
+    <form method="post">
+        <label for="product_id">商品:</label>
+        <select name="product_id" required>
+            {% for product in products %}
+                <option value="{{ product.ID }}">{{ product.NAME }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label for="user_id">ユーザー:</label>
+        <select name="user_id" required>
+            {% for user in users %}
+                <option value="{{ user.ID }}">{{ user.USERNAME }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label for="quantity">数量:</label>
+        <input type="number" name="quantity" required>
+        <br>
+
+        <label for="type">種類:</label>
+        <select name="type" required>
+            <option value="入庫">入庫</option>
+            <option value="出庫">出庫</option>
+        </select>
+        <br>
+
+        <label for="note">備考:</label>
+        <input type="text" name="note">
+        <br>
+
+        <button type="submit">登録</button>
+    </form>
+</body>
+</html>

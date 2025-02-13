@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入出庫履歴</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>入出庫履歴</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>商品名</th>
+                <th>ユーザー</th>
+                <th>数量</th>
+                <th>種類</th>
+                <th>日時</th>
+                <th>備考</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in history %}
+            <tr>
+                <td>{{ entry.ID }}</td>
+                <td>{{ entry.PRODUCT_NAME }}</td>
+                <td>{{ entry.USERNAME }}</td>
+                <td>{{ entry.QUANTITY }}</td>
+                <td>{{ entry.TYPE }}</td>
+                <td>{{ entry.TIMESTAMP }}</td>
+                <td>{{ entry.NOTE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
