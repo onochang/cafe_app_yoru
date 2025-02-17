@@ -1,16 +1,69 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = "your_secret_key"  # セッション用のキー
 
 DB_NAME = "cafe_app.db"
 
 # データベース接続
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row  # 辞書形式でデータ取得
+    conn.row_factory = sqlite3.Row
     return conn
+
+# 🔹 ログイン機能の追加
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM USERS WHERE USERNAME = ?", (username,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and check_password_hash(user["PASSWORD"], password):
+            session['user_id'] = user['ID']
+            session['username'] = user['USERNAME']
+            return redirect(url_for('inventory'))
+        else:
+            flash("ユーザー名またはパスワードが間違っています", "danger")
+
+    return render_template('login.html')
+
+# 🔹 ログアウト機能の追加
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("ログアウトしました", "success")
+    return redirect(url_for('login'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        hashed_password = generate_password_hash(password)
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO USERS (USERNAME, PASSWORD, ROLE, CREATED_AT) VALUES (?, ?, ?, ?)",
+                       (username, hashed_password, role, datetime.now()))
+        conn.commit()
+        conn.close()
+
+        flash("ユーザー登録が完了しました。ログインしてください。", "success")  # 成功メッセージを表示
+        return redirect(url_for('login'))  # 🔹登録後にログインページへ遷移
+
+    return render_template('register.html')
+
 
 # 商品登録ページ
 @app.route('/add_product', methods=['GET', 'POST'])
